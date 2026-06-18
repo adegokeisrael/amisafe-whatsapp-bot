@@ -303,16 +303,6 @@ Update your Meta webhook to your production HTTPS domain.
 
 ## Roadmap
 
-### Language Intelligence
-
-- [ ] Fine-tuned Whisper models for Hausa, Yoruba and Igbo
-- [ ] African-language NER models
-
-### Cross-Language Analysis
-
-- [ ] NLLB-200 translation integration
-- [ ] Cross-language harm clustering
-
 ### User Experience
 
 - [ ] WhatsApp follow-up notifications
