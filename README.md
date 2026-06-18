@@ -94,39 +94,25 @@ The reporting experience is intentionally simple.
 
 ## System Architecture
 
-```text
-WhatsApp Cloud API
-       │
-       ▼
-FastAPI Webhook
-(Signature Verification)
-       │
-       ▼
-Conversation State Machine
-(SQLite Sessions)
-       │
- ┌─────┴───────────────────────┐
- │                             │
- ▼                             ▼
+The AmiSafe WhatsApp Bot follows a privacy-by-design architecture that securely collects, anonymises, stores, and aggregates AI harm reports submitted through WhatsApp.
 
-Media Processor            Anonymiser
-(image/audio)              (PII removal)
+<div align="center">
 
- │                             │
- └─────────────┬───────────────┘
-               │
-               ▼
+<img src="media/flow.png" alt="AmiSafe WhatsApp Bot Architecture" width="900">
 
-Encrypted Report Store
+</div>
 
-(SQLite → PostgreSQL in production)
+### Architecture Components
 
-               │
-               ▼
-
-Aggregation Dashboard
-(JSON Export for Trusted Partners)
-```
+| Component | Responsibility |
+|-----------|----------------|
+| WhatsApp Cloud API | Receives user messages, media, and webhook events |
+| FastAPI Webhook | Verifies requests and orchestrates message processing |
+| Conversation State Machine | Maintains multi-step reporting sessions |
+| Media Processor | Handles image, screenshot, and audio processing |
+| Anonymiser | Removes personally identifiable information (PII) |
+| Encrypted Report Store | Securely stores reports and evidence |
+| Aggregation Dashboard | Generates aggregate insights for trusted partners |
 
 ---
 
