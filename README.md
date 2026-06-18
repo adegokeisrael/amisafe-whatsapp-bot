@@ -1,179 +1,356 @@
 # AmiSafe WhatsApp Bot
 
-**Community-led AI harm reporting via WhatsApp — built for African internet users.**
+<div align="center">
 
-AmiSafe's WhatsApp companion bot replicates the browser extension's structured harm-capture flow for users with mobile-only internet access. A reporter submits a structured, evidence-backed, anonymised AI harm report entirely within WhatsApp — no app download, no account, no personal identifier required.
+# 🛡️ AmiSafe WhatsApp Bot
 
----
+### Community-led AI harm reporting via WhatsApp for African internet users
 
-## What it does
+Submit structured, evidence-backed and privacy-preserving AI harm reports directly from WhatsApp — no app installation, no account creation, and no technical expertise required.
 
-1. Greets the user in their chosen language (8 African languages supported)
-2. Walks them through a plain-language harm taxonomy
-3. Collects mandatory evidence (image, screenshot, or voice note)
-4. Lets them choose their disclosure level (private / anonymous research / verified partner)
-5. Stores the report with a pseudonymous ID, encrypted at rest
-6. Returns a receipt with a report reference number
+![Demo](media/amisafe_whatsapp_demo.gif)
 
-**Supported languages at launch:**
-Hausa · Yoruba · Igbo · Swahili · Amharic · Somali · Zulu · Nigerian Pidgin · English
+![Python](https://img.shields.io/badge/Python-3.10+-blue)
+![FastAPI](https://img.shields.io/badge/FastAPI-Backend-green)
+![WhatsApp](https://img.shields.io/badge/WhatsApp-Cloud_API-25D366)
+![License](https://img.shields.io/badge/License-Apache_2.0-orange)
 
-**Harm taxonomy:**
-Fake Image or Video · False Information · Unfair Treatment · Harassment or Intimidation · Financial Harm · Other
+</div>
 
 ---
 
-## Architecture
+## Overview
 
-```
+AmiSafe extends the AmiSafe ecosystem to mobile-first African communities through WhatsApp.
+
+Many internet users across Africa primarily access the internet through mobile devices and messaging platforms rather than web browsers. This bot enables anyone to safely document and report AI-related harms using a familiar communication channel.
+
+Users can submit anonymised, evidence-backed reports entirely within WhatsApp.
+
+No application download, registration, or personal identifiers are required.
+
+---
+
+## Key Features
+
+✅ Multi-language support (8 African languages)
+
+✅ Structured AI harm reporting workflow
+
+✅ Evidence collection (images, screenshots, voice notes)
+
+✅ Privacy-preserving report storage
+
+✅ User-controlled disclosure levels
+
+✅ Automatic anonymisation
+
+✅ End-to-end encrypted report persistence
+
+✅ Aggregated insights for trusted research partners
+
+---
+
+## Supported Languages
+
+- English
+- Hausa
+- Yoruba
+- Igbo
+- Swahili
+- Amharic
+- Somali
+- Zulu
+- Nigerian Pidgin
+
+---
+
+## Supported AI Harm Categories
+
+Users can report:
+
+- 🖼️ Fake Image or Video
+- 📰 False Information
+- ⚖️ Unfair Treatment
+- 🚫 Harassment or Intimidation
+- 💰 Financial Harm
+- 📝 Other
+
+---
+
+## User Journey
+
+The reporting experience is intentionally simple.
+
+1. User opens WhatsApp and sends a message.
+2. AmiSafe greets the user in their preferred language.
+3. The bot guides them through AI harm categories.
+4. The user uploads supporting evidence.
+5. The user selects a disclosure preference.
+6. AmiSafe anonymises and securely stores the report.
+7. A reference ID is returned to the user.
+
+---
+
+## System Architecture
+
+```text
 WhatsApp Cloud API
        │
        ▼
-  FastAPI Webhook  ←──  Signature Verification
+FastAPI Webhook
+(Signature Verification)
        │
        ▼
-  Conversation State Machine (SQLite sessions)
+Conversation State Machine
+(SQLite Sessions)
        │
-  ┌────┴─────────────────────┐
-  │                          │
-  ▼                          ▼
-Media Processor         Anonymiser
-(image/audio download)  (NER stripping, pseudonymous IDs)
-  │                          │
-  └────────────┬─────────────┘
+ ┌─────┴───────────────────────┐
+ │                             │
+ ▼                             ▼
+
+Media Processor            Anonymiser
+(image/audio)              (PII removal)
+
+ │                             │
+ └─────────────┬───────────────┘
                │
                ▼
-    Encrypted Report Store (SQLite → swap PostgreSQL for prod)
+
+Encrypted Report Store
+
+(SQLite → PostgreSQL in production)
+
                │
                ▼
-    Aggregation Dashboard (JSON export for vetted partners)
+
+Aggregation Dashboard
+(JSON Export for Trusted Partners)
 ```
 
 ---
 
-## Setup
+## Privacy & Security by Design
 
-### Prerequisites
+| Component | Implementation |
+|-----------|----------------|
+| No account required | Sessions use rotating pseudonymous IDs |
+| Phone numbers | HMAC-SHA256 hashing |
+| Evidence files | EXIF removal + encryption |
+| Text submissions | Named entity anonymisation |
+| Audio | Local transcription + deletion |
+| Disclosure controls | User-selected access permissions |
+| Public outputs | Aggregated insights only |
+
+---
+
+## Disclosure Levels
+
+| Level | Description | Access |
+|------|-------------|--------|
+| 🔒 Private | Stored locally and never shared | Reporter only |
+| 🔍 Anonymous Research | Pseudonymous report with evidence hashes | Approved researchers |
+| 🤝 Verified Partner | Fully anonymised report | Trusted civil society organisations |
+
+---
+
+# Getting Started
+
+## Prerequisites
+
 - Python 3.10+
-- A Meta Business Account with WhatsApp Cloud API access
-- A publicly accessible HTTPS endpoint (use [ngrok](https://ngrok.com/) for local dev)
+- Meta Business Account
+- WhatsApp Cloud API access
+- Public HTTPS endpoint
 
-### 1. Clone and install
+For local development, ngrok is recommended.
+
+---
+
+## Installation
+
+### Clone repository
 
 ```bash
 git clone https://github.com/adegokeisrael/amisafe-whatsapp-bot.git
+
 cd amisafe-whatsapp-bot
+```
+
+### Create virtual environment
+
+Linux/Mac:
+
+```bash
 python -m venv venv
-source venv/bin/activate        # Windows: venv\Scripts\activate
+
+source venv/bin/activate
+```
+
+Windows:
+
+```bash
+python -m venv venv
+
+venv\Scripts\activate
+```
+
+### Install dependencies
+
+```bash
 pip install -r requirements.txt
 ```
 
-### 2. Environment variables
+---
+
+## Environment Configuration
+
+Create your environment file.
 
 ```bash
 cp .env.example .env
 ```
 
-Edit `.env` with your credentials:
+Populate it with your credentials.
 
 ```env
-WHATSAPP_TOKEN=your_whatsapp_cloud_api_token
-WHATSAPP_PHONE_NUMBER_ID=your_phone_number_id
-VERIFY_TOKEN=any_random_string_you_choose
-ENCRYPTION_KEY=generate_with_python_-c_"from_cryptography.fernet_import_Fernet;print(Fernet.generate_key().decode())"
+WHATSAPP_TOKEN=
+
+WHATSAPP_PHONE_NUMBER_ID=
+
+VERIFY_TOKEN=
+
+ENCRYPTION_KEY=
+
 DATABASE_URL=sqlite:///./amisafe.db
-PARTNER_API_KEY=key_for_vetted_partner_dashboard_access
+
+PARTNER_API_KEY=
 ```
 
-### 3. Run locally
+Generate an encryption key:
+
+```bash
+python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+```
+
+---
+
+## Run Locally
 
 ```bash
 uvicorn main:app --reload --port 8000
 ```
 
-### 4. Expose locally with ngrok (development)
+---
+
+## Expose Locally Using ngrok
 
 ```bash
 ngrok http 8000
 ```
 
-Copy the HTTPS URL ngrok gives you. In your Meta App Dashboard:
-- Go to WhatsApp → Configuration → Webhook
-- Set Callback URL to: `https://your-ngrok-url.ngrok.io/webhook`
-- Set Verify Token to the value you put in `.env`
-- Subscribe to: `messages`
+In the Meta App Dashboard:
 
-### 5. Deploy to production
+1. Navigate to:
+
+```
+WhatsApp → Configuration → Webhook
+```
+
+2. Set:
+
+```text
+Callback URL:
+https://your-ngrok-url.ngrok.io/webhook
+
+Verify Token:
+Your VERIFY_TOKEN
+```
+
+3. Subscribe to:
+
+```text
+messages
+```
+
+---
+
+## Production Deployment
+
+Build Docker image:
 
 ```bash
 docker build -t amisafe-bot .
+```
+
+Run container:
+
+```bash
 docker run -d -p 8000:8000 --env-file .env amisafe-bot
 ```
 
-Point your domain's HTTPS to port 8000. Update the webhook URL in Meta App Dashboard.
+Update your Meta webhook to your production HTTPS domain.
 
 ---
 
-## Privacy architecture
+## API Endpoints
 
-| What | How |
-|---|---|
-| No account required | Sessions keyed to rotating pseudonymous ID, not phone number |
-| Phone number handling | Hashed with HMAC-SHA256, never stored in plaintext |
-| Evidence files | Downloaded to temp storage, EXIF stripped, then encrypted before DB write |
-| Text content | Named-entity recognition strips names, locations, phone numbers before storage |
-| Audio | Transcribed on-server using `faster-whisper` (tiny model), audio deleted after transcription |
-| Disclosure levels | Reporter explicitly chooses: Private / Anonymous Research / Verified Partner |
-| Public output | Aggregate patterns only — individual reports never exposed |
-
----
-
-## Report disclosure levels
-
-| Level | What is stored | Who can access |
-|---|---|---|
-| **Private** | Encrypted locally, never transmitted | Reporter only (via reference ID) |
-| **Anonymous Research** | Pseudonymous report + evidence hash | Vetted researchers via dashboard API |
-| **Verified Partner** | Full anonymised report | Named civil society partners (Paradigm Initiative, KICTANET, etc.) |
-
----
-
-## API endpoints
-
-| Endpoint | Method | Purpose |
-|---|---|---|
-| `/webhook` | GET | WhatsApp webhook verification |
-| `/webhook` | POST | Receive incoming messages |
-| `/dashboard/reports` | GET | Aggregate stats (API key required) |
-| `/dashboard/export` | GET | Partner data export (API key required) |
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/webhook` | GET | Webhook verification |
+| `/webhook` | POST | Incoming WhatsApp messages |
+| `/dashboard/reports` | GET | Aggregated analytics |
+| `/dashboard/export` | GET | Partner export |
 | `/health` | GET | Health check |
 
 ---
 
-## Limitations
+## Current Limitations
 
-- Voice transcription uses `faster-whisper` tiny model: accuracy is lower for tonal languages (Yoruba, Igbo). A fine-tuned model is a roadmap item.
-- WhatsApp Cloud API is rate-limited on the free tier: suitable for pilot volumes, not high-throughput deployment.
-- NER anonymisation is English-biased: Hausa/Yoruba/Igbo named-entity stripping uses heuristics rather than a trained NER model. Some names may not be caught.
-- The bot cannot verify that submitted images depict AI-generated content — that determination is left to the aggregation/review layer.
-- Tested with: Nigerian (+234) and Kenyan (+254) numbers. Other country codes should work but have not been piloted.
+- Whisper Tiny has lower transcription accuracy for tonal languages.
+- WhatsApp free-tier rate limits apply.
+- African-language NER currently uses heuristics.
+- The bot cannot automatically determine if submitted content is AI-generated.
+- Pilot testing has primarily been conducted in Nigeria and Kenya.
 
 ---
 
 ## Roadmap
 
-- [ ] Fine-tuned Whisper model for Hausa, Yoruba, Igbo transcription
-- [ ] African-language NER model for more reliable anonymisation
-- [ ] NLLB-200 translation layer so reports submitted in any language surface in cross-language pattern clustering
-- [ ] WhatsApp template messages for follow-up notifications (requires Meta template approval)
-- [ ] PostgreSQL migration guide for production deployments
+### Language Intelligence
+
+- [ ] Fine-tuned Whisper models for Hausa, Yoruba and Igbo
+- [ ] African-language NER models
+
+### Cross-Language Analysis
+
+- [ ] NLLB-200 translation integration
+- [ ] Cross-language harm clustering
+
+### User Experience
+
+- [ ] WhatsApp follow-up notifications
+- [ ] Reporter status tracking
+
+### Infrastructure
+
+- [ ] PostgreSQL migration
+- [ ] Scalable production deployment guide
 
 ---
 
-## Licence
-
-Apache 2.0 — see [LICENSE](LICENSE)
-
 ## Contributing
 
-Pull requests welcome. Please open an issue first to discuss what you'd like to change. All contributors must agree to the [Code of Conduct](CODE_OF_CONDUCT.md).
+Contributions are welcome.
+
+Please open an issue before submitting large changes.
+
+By contributing, you agree to abide by the project's Code of Conduct.
+
+---
+
+## License
+
+Distributed under the Apache 2.0 License.
+
+See `LICENSE` for more information.
