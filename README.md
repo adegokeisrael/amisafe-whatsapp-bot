@@ -293,9 +293,8 @@ Update your Meta webhook to your production HTTPS domain.
 
 ## Current Limitations
 
-- Whisper Tiny has lower transcription accuracy for tonal languages.
+- Our ASR has lower transcription accuracy for tonal languages.
 - WhatsApp free-tier rate limits apply.
-- African-language NER currently uses heuristics.
 - The bot cannot automatically determine if submitted content is AI-generated.
 - Pilot testing has primarily been conducted in Nigeria and Kenya.
 
