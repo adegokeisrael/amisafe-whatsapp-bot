@@ -33,7 +33,7 @@ No application download, registration, or personal identifiers are required.
 
 ## Key Features
 
-✅ Multi-language support (8 African languages)
+✅ Multi-language support (9 African languages)
 
 ✅ Structured AI harm reporting workflow
 
